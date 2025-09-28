@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(sce LANGUAGES CXX)
+project(invaders LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
@@ -13,9 +13,10 @@ set(CMAKE_CXX_FLAGS "-I${PROJECT_SOURCE_DIR} -I${PROJECT_SOURCE_DIR}\\deps\\SDL\
 file(GLOB_RECURSE headers RELATIVE ${PROJECT_SOURCE_DIR} impl/**/*.h impl/*.h)
 file(GLOB_RECURSE sources RELATIVE ${PROJECT_SOURCE_DIR} impl/**/*.cpp impl/*.cpp)
 
-add_executable("sce" ${sources})
-target_include_directories("sce" INTERFACE ${PROJECT_SOURCE_DIR})
-target_sources("sce" PRIVATE FILE_SET headers BASE_DIRS TYPE HEADERS)
+add_executable("invaders" ${sources})
+target_include_directories("invaders" INTERFACE ${PROJECT_SOURCE_DIR})
+target_include_directories("invaders" PRIVATE ${PROJECT_SOURCE_DIR}/deps/stb_image)
+target_sources("invaders" PRIVATE FILE_SET headers BASE_DIRS TYPE HEADERS)
 
 include(CMakePrintHelpers)
 cmake_print_variables(headers)
@@ -50,15 +51,15 @@ set_target_properties(
         ${PROJECT_SOURCE_DIR}/deps/SDL_ttf/build/libSDL3_ttf.dll
 )
 
-target_compile_options("sce" PRIVATE "-Wall")
-target_compile_options("sce" PRIVATE "-O0")
-target_compile_options("sce" PRIVATE "-m64")
-target_compile_options("sce" PRIVATE "-g")
-target_compile_options("sce" PRIVATE "-finput-charset=UTF-8")
+target_compile_options("invaders" PRIVATE "-Wall")
+target_compile_options("invaders" PRIVATE "-O0")
+target_compile_options("invaders" PRIVATE "-m64")
+target_compile_options("invaders" PRIVATE "-g")
+target_compile_options("invaders" PRIVATE "-finput-charset=UTF-8")
 
-target_link_options("sce" PRIVATE "-m64")
-target_link_libraries("sce" "sdl" "sdlttf")
-target_link_libraries("sce" "opengl32" "-lglu32" "-lgdi32")
+target_link_options("invaders" PRIVATE "-m64")
+target_link_libraries("invaders" "sdl" "sdlttf")
+target_link_libraries("invaders" "opengl32" "-lglu32" "-lgdi32")
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         enable_testing()
