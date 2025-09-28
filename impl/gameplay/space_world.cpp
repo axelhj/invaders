@@ -5,7 +5,8 @@
 #include <SDL3/SDL_properties.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include <deps/stb_image/stb_image.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include <cstdlib>
 #include <cstdio>
