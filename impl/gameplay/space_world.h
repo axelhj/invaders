@@ -5,8 +5,6 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#define STB_IMAGE_STATIC
-#include <deps/stb_image/stb_image.h>
 #include <cstdlib>
 
 class SpaceWorld {

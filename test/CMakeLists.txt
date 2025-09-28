@@ -12,6 +12,7 @@ cmake_print_variables(sources)
 
 add_executable("testproj" mytest.cpp;${sources})
 target_include_directories("testproj" INTERFACE ${PROJECT_SOURCE_DIR})
+target_include_directories("testproj" PRIVATE ${PROJECT_SOURCE_DIR}/deps/stb_image)
 target_sources("testproj" PRIVATE FILE_SET headers BASE_DIRS TYPE HEADERS)
 
 target_compile_options("testproj" PRIVATE "-Wall")
