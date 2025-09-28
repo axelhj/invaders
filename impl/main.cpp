@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
     /* Create a window */
-    if (SDL_CreateWindowAndRenderer("sce", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer) < 0) {
+    if (SDL_CreateWindowAndRenderer("invaders", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer) < 0) {
         SDL_LogError(1, "SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
         SDL_Quit();
         return EXIT_FAILURE;
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
             should_quit = true;
         }
         SDL_RenderPresent(renderer);
-        if (SDL_WaitEvent(&event) == SDL_TRUE) {
+        if (SDL_PollEvent(&event) == SDL_TRUE) {
             if (event.type == SDL_EVENT_QUIT) {
                 should_quit = true;
             // } else if (event.type == SDL_EVENT_TEXT_INPUT) {
@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
                     break;
                 case SDLK_ESCAPE:
                     // interpreter->on_input(std::string("\e"));
+                    should_quit = true;
                     break;
                 case SDLK_RETURN:
                     // interpreter->on_input(std::string("\r"));
