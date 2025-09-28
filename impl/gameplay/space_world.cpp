@@ -1,15 +1,17 @@
-#include "impl/render/render_sprite.h"
+#include "impl/gameplay/space_world.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_properties.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+#include <deps/stb_image/stb_image.h>
+
 #include <cstdlib>
 #include <cstdio>
 #include <string>
 
-RenderSprite::RenderSprite(SDL_Renderer* renderer, const char* font_path)
+SpaceWorld::SpaceWorld(SDL_Renderer* renderer, const char* asset_path, const char* font_path)
     : init_ok(false),
     renderer(renderer),
     rect(),
@@ -29,10 +31,20 @@ RenderSprite::RenderSprite(SDL_Renderer* renderer, const char* font_path)
         SDL_LogError(1, "Couldn't set font-size with TTF: %s\n", TTF_GetError());
         return;
     }
+    if ((image = stbi_load(asset_path, &width, &height, &channels, 4)) == nullptr) {
+        SDL_LogError(
+            1,
+            "Couldn't load asset: %s (%s)\n",
+            // stbi_failure_reason(),
+            "",
+            asset_path
+        );
+        return;
+    }
     init_ok = true;
 }
 
-bool RenderSprite::render_text(
+bool SpaceWorld::render_text(
     SDL_Color textColor,
     const char *text,
     unsigned int width
@@ -52,7 +64,7 @@ bool RenderSprite::render_text(
     return true;
 }
 
-bool RenderSprite::draw(
+bool SpaceWorld::draw(
     const char* text,
     float x,
     float y,
@@ -123,7 +135,7 @@ bool RenderSprite::draw(
     return true;
 }
 
-RenderSprite::~RenderSprite() {
+SpaceWorld::~SpaceWorld() {
     if (texture != NULL) {
         SDL_DestroyTexture(texture);
     }
@@ -133,6 +145,10 @@ RenderSprite::~RenderSprite() {
     /* De-init TTF. */
     if (texture != NULL) {
         SDL_DestroyTexture(texture);
+    }
+    if (image != NULL) {
+        // stbi_image_free((void*)image);
+        free(image);
     }
     /* De-init TTF. */
     if (init_ok) {

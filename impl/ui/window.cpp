@@ -26,7 +26,7 @@ bool Window::draw() {
     auto parts = make_parts("", "\r");
     std::size_t row_start = 0;
     for (auto part : *parts) {
-        auto cursor_position = 0;
+        std::size_t cursor_position = 0;
         auto has_cursor = false;
         if (cursor_position >= row_start && cursor_position <= row_start + part.length()) {
             has_cursor = true;

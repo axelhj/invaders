@@ -9,8 +9,6 @@
 #include <cstdio>
 #include <string>
 
-static std::hash<std::string> str_hasher;
-
 RenderRow::RenderRow(SDL_Renderer* renderer, const char* font_path)
     : init_ok(false),
     renderer(renderer),
