@@ -1,35 +1,33 @@
-#ifndef ROW_H
-#define ROW_H
+#ifndef RENDER_SPRITE_H
+#define RENDER_SPRITE_H
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3_ttf/SDL_ttf.h>
-
-#include <cstdlib>
+#include "stb_image.h"
 
 class RenderSprite {
 public:
-    RenderSprite(SDL_Renderer* renderer, const char* font_path);
+    RenderSprite(SDL_Renderer* renderer, const char* asset_path);
     ~RenderSprite();
-    bool render_text(
-        SDL_Color c,
-        const char *text,
-        unsigned int width
-    );
-    bool draw(
-        const char* text,
-        float x,
-        float y,
-        float w,
-        bool has_cursor,
-        std::size_t cursor_pos
-    );
+    void set_x(unsigned int x);
+    void set_y(unsigned int y);
+    void set_width(unsigned int width);
+    void set_height(unsigned int height);
+    int get_x();
+    int get_y();
+    int get_width();
+    int get_height();
+    void draw();
     bool init_ok;
 private:
     SDL_Renderer* renderer;
-    SDL_Rect rect;
+    SDL_FRect rect;
     SDL_Texture* texture;
-    TTF_Font* font;
+    stbi_uc* image;
+    int width;
+    int height;
+    int channels;
 };
 
-#endif // ROW_H
+#endif // RENDER_SPRITE_H

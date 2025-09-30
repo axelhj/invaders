@@ -1,141 +1,105 @@
 #include "impl/render/render_sprite.h"
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_log.h>
+#include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_properties.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <cstdlib>
 #include <cstdio>
-#include <string>
+#include <format>
 
-RenderSprite::RenderSprite(SDL_Renderer* renderer, const char* font_path)
+RenderSprite::RenderSprite(SDL_Renderer* renderer, const char* asset_path)
     : init_ok(false),
     renderer(renderer),
     rect(),
     texture(nullptr),
-    font(nullptr) {
-    /* Initialize the TTF library */
-    if (TTF_Init() < 0) {
-        SDL_LogError(1, "TTF_Init() failed: %s\n", TTF_GetError());
+    image(nullptr),
+    width(0),
+    height(0),
+    channels(0)
+{
+    if ((image = stbi_load(asset_path, &width, &height, &channels, 4)) == nullptr) {
+        SDL_LogError(
+            1,
+            "Couldn't load asset: %s (%s)\n",
+            stbi_failure_reason(),
+            asset_path
+        );
         return;
     }
-    font = TTF_OpenFont(font_path, 24);
-    if (font == NULL) {
-        SDL_LogError(1, "Couldn't initialize TT-font: %s\n", TTF_GetError());
-        return;
-    }
-    if (TTF_SetFontSize(font, 24) != 0) {
-        SDL_LogError(1, "Couldn't set font-size with TTF: %s\n", TTF_GetError());
-        return;
-    }
-    init_ok = true;
 }
 
-bool RenderSprite::render_text(
-    SDL_Color textColor,
-    const char *text,
+void RenderSprite::set_x(unsigned int x) {
+    rect.x = x;
+}
+
+void RenderSprite::set_y(unsigned int y) {
+    rect.y = y;
+}
+
+void RenderSprite::set_width(
     unsigned int width
 ) {
-    SDL_Surface* surface = TTF_RenderUTF8_Blended_Wrapped(font, text, textColor, width);
-    if (surface == nullptr) {
-        SDL_LogError(1, "TTF_RenderUTF8_Solid_Wrapped() failed: %s\n", TTF_GetError());
-        return false;
-    }
-    // Continuous creation and destrution of surface causes a small memory leak.
-    // Similar to as described here https://github.com/libsdl-org/SDL/issues/3453
-    // In which case it might be caused by a hardware driver program.
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
-    rect.w = surface->w;
-    rect.h = surface->h;
-    SDL_DestroySurface(surface);
-    return true;
+    rect.w = width;
 }
 
-bool RenderSprite::draw(
-    const char* text,
-    float x,
-    float y,
-    float w,
-    bool has_cursor,
-    std::size_t cursor_pos
+void RenderSprite::set_height(
+    unsigned int height
 ) {
-    SDL_FRect tRect = {};
-    TTF_SetFontOutline(font, 0);
-    bool result = 0;
-    if (text[0] == '\0') {
-        rect.w = 8;
-        rect.h = 32;
-    } else {
-        // auto hashed = str_hasher(text);
-        // auto entry = lru.find(hashed);
-        // if (entry == nullptr) {
-            SDL_Color cursor_color = {200, 200, 200, 0};
-            result = render_text(cursor_color, text, w);
-        //     lru.append(hashed, texture);
-        // } else {
-            auto prop = SDL_GetTextureProperties(texture);
-            rect.w = SDL_GetNumberProperty(prop, SDL_PROP_TEXTURE_WIDTH_NUMBER, 0);
-            rect.h = SDL_GetNumberProperty(prop, SDL_PROP_TEXTURE_HEIGHT_NUMBER, 0);
-        // }
+    rect.h = height;
+}
+
+int RenderSprite::get_x() {
+    return rect.x;
+}
+
+int RenderSprite::get_y() {
+    return rect.y;
+}
+
+int RenderSprite::get_width() {
+    return rect.w;
+}
+
+int RenderSprite::get_height() {
+    return rect.h;
+}
+
+void RenderSprite::draw() {
+    if (texture == nullptr) {
+        texture = SDL_CreateTexture(
+            renderer,
+            SDL_PIXELFORMAT_RGBA32,
+            SDL_TEXTUREACCESS_STREAMING,
+            width,
+            height
+        );
+        // Alternative method for setting pixel data:
+        // int pitch = 128 * 4;
+        // SDL_UpdateTexture(texture, NULL, image, pitch);
+        // Pitch is changed to 512 after locking.
+        void* pixels = NULL;
+        int pitch = 0;
+        SDL_LockTexture(texture, NULL, &pixels, &pitch);
+        memcpy(pixels, image, width * height * 4);
+        SDL_UnlockTexture(texture);
     }
-    if (rect.w == 0 || rect.h == 0 || result != 0) {
-        return false;
-    }
-    tRect.x = x;
-    tRect.y = y;
-    tRect.w = rect.w;
-    tRect.h = rect.h;
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderFillRect(renderer, &tRect);
-    if (has_cursor) {
-        SDL_SetRenderDrawColor(renderer, 150, 150, 150, 0);
-        int precedingWidth = 0;
-        int precedingHeight = 0;
-        auto until_cursor = std::string(text).substr(0, cursor_pos);
-        int precedingStringResult = TTF_SizeUTF8(font, until_cursor.c_str(), &precedingWidth, &precedingHeight);
-        int charWidth = 0;
-        int charHeight = 0;
-        auto from_cursor = std::string(text).substr(cursor_pos, 1);
-        int charResult = TTF_SizeUTF8(font, from_cursor.c_str(), &charWidth, &charHeight);
-        if (precedingStringResult == 0 && charResult == 0) {
-            tRect.x = x + precedingWidth;
-            // No char width indicates end of row.
-            if (charWidth == 0) {
-                tRect.y = precedingHeight + y - charHeight / 2.f;
-                tRect.w = 12;
-                tRect.h = charHeight / 2.f;
-            } else {
-                tRect.y = precedingHeight + y - charHeight;
-                tRect.w = charWidth;
-                tRect.h = charHeight;
-            }
-        }
-        SDL_RenderFillRect(renderer, &tRect);
-    }
-    tRect.x = x;
-    tRect.y = y;
-    tRect.w = rect.w;
-    tRect.h = rect.h;
-    if (text[0] != '\0') {
-        SDL_RenderTexture(renderer, texture, NULL, &tRect);
-    }
-    return true;
+    SDL_RenderTexture(renderer, texture, NULL, &rect);
 }
 
 RenderSprite::~RenderSprite() {
     if (texture != NULL) {
         SDL_DestroyTexture(texture);
+        texture = NULL;
     }
-    if (font != NULL) {
-        TTF_CloseFont(font);
-    }
-    /* De-init TTF. */
-    if (texture != NULL) {
-        SDL_DestroyTexture(texture);
-    }
-    /* De-init TTF. */
-    if (init_ok) {
-        TTF_Quit();
+    if (image != NULL) {
+        stbi_image_free(image);
+        image = NULL;
     }
 }
