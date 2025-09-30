@@ -10,14 +10,14 @@ class RenderSprite {
 public:
     RenderSprite(SDL_Renderer* renderer, const char* asset_path);
     ~RenderSprite();
-    void set_x(unsigned int x);
-    void set_y(unsigned int y);
-    void set_width(unsigned int width);
-    void set_height(unsigned int height);
-    int get_x();
-    int get_y();
-    int get_width();
-    int get_height();
+    void set_x(float x);
+    void set_y(float y);
+    void set_width(float width);
+    void set_height(float height);
+    float get_x();
+    float get_y();
+    float get_width();
+    float get_height();
     void draw();
     bool init_ok;
 private:

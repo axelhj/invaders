@@ -2,6 +2,7 @@
 #define SPACE_WORLD_H
 
 #include "impl/render/render_sprite.h"
+#include "impl/gameplay/inputs.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
@@ -11,7 +12,7 @@
 
 class SpaceWorld {
 public:
-    SpaceWorld(SDL_Renderer* renderer);
+    SpaceWorld(SDL_Renderer* renderer, Inputs* inputs);
     ~SpaceWorld();
     void update(float time, float delta_time);
     void draw();
@@ -19,6 +20,7 @@ public:
 private:
     std::vector<RenderSprite*> render_sprites;
     SDL_Renderer* renderer;
+    Inputs* inputs;
 };
 
 #endif // SPACE_WORLD_H
