@@ -12,7 +12,7 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <format>
+#include <iostream>
 
 RenderSprite::RenderSprite(SDL_Renderer* renderer, const char* asset_path)
     : init_ok(false),
@@ -35,39 +35,41 @@ RenderSprite::RenderSprite(SDL_Renderer* renderer, const char* asset_path)
     }
 }
 
-void RenderSprite::set_x(unsigned int x) {
+void RenderSprite::set_x(float x) {
+    std::cout << x << std::endl;
     rect.x = x;
 }
 
-void RenderSprite::set_y(unsigned int y) {
+void RenderSprite::set_y(float y) {
+    std::cout << y << std::endl;
     rect.y = y;
 }
 
 void RenderSprite::set_width(
-    unsigned int width
+    float width
 ) {
     rect.w = width;
 }
 
 void RenderSprite::set_height(
-    unsigned int height
+    float height
 ) {
     rect.h = height;
 }
 
-int RenderSprite::get_x() {
+float RenderSprite::get_x() {
     return rect.x;
 }
 
-int RenderSprite::get_y() {
+float RenderSprite::get_y() {
     return rect.y;
 }
 
-int RenderSprite::get_width() {
+float RenderSprite::get_width() {
     return rect.w;
 }
 
-int RenderSprite::get_height() {
+float RenderSprite::get_height() {
     return rect.h;
 }
 
@@ -90,7 +92,8 @@ void RenderSprite::draw() {
         memcpy(pixels, image, width * height * 4);
         SDL_UnlockTexture(texture);
     }
-    SDL_RenderTexture(renderer, texture, NULL, &rect);
+    SDL_FRect destinationRect { rect };
+    SDL_RenderTexture(renderer, texture, NULL, &destinationRect);
 }
 
 RenderSprite::~RenderSprite() {

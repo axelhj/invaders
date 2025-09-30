@@ -1,4 +1,5 @@
 #include "impl/gameplay/space_world.h"
+#include "impl/gameplay/inputs.h"
 #include "impl/constant/constants.h"
 
 #include <SDL3/SDL.h>
@@ -8,6 +9,8 @@
 
 #include <cstdlib>
 #include <iostream>
+
+#define FRAME_TIME_TARGET_MS 16.66f
 
 int main(int argc, char **argv) {
     SDL_Event event;
@@ -24,21 +27,25 @@ int main(int argc, char **argv) {
         SDL_Quit();
         return EXIT_FAILURE;
     }
-    auto world = SpaceWorld(renderer);
+    auto inputs = Inputs();
+    auto world = SpaceWorld(renderer, &inputs);
     bool should_quit = false;
     float accumulator = 0;
     while (!should_quit) {
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 0);
         SDL_RenderClear(renderer);
-        world.update(accumulator, 0.16);
-        accumulator += 0.16;
+        world.update(accumulator, FRAME_TIME_TARGET_MS);
+        accumulator += FRAME_TIME_TARGET_MS;
         world.draw();
+        inputs.update();
+        SDL_Delay((int)FRAME_TIME_TARGET_MS);
         SDL_RenderPresent(renderer);
         if (SDL_PollEvent(&event) == SDL_TRUE) {
             std::cout << event.type << std::endl;
             if (event.type == SDL_EVENT_QUIT) {
                 should_quit = true;
             } else if (event.type == SDL_EVENT_KEY_DOWN) {
+                inputs.set_kc(event.key.key, true);
                 switch (event.key.key) {
                 case SDLK_BACKSPACE:
                     break;
@@ -50,6 +57,8 @@ int main(int argc, char **argv) {
                 case SDLK_TAB:
                     break;
                 }
+            } else if (event.type == SDL_EVENT_KEY_UP) {
+                inputs.set_kc(event.key.key, false);
             }
         }
     }
