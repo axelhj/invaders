@@ -1,39 +1,24 @@
 #ifndef SPACE_WORLD_H
 #define SPACE_WORLD_H
 
+#include "impl/render/render_sprite.h"
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include <cstdlib>
+#include <vector>
 
 class SpaceWorld {
 public:
-    SpaceWorld(SDL_Renderer* renderer, const char* asset_path, const char* font_path);
+    SpaceWorld(SDL_Renderer* renderer);
     ~SpaceWorld();
-    bool render_text(
-        SDL_Color c,
-        const char *text,
-        unsigned int width
-    );
-    bool draw(
-        const char* text,
-        float x,
-        float y,
-        float w,
-        bool has_cursor,
-        std::size_t cursor_pos
-    );
+    void update(float time, float delta_time);
+    void draw();
     bool init_ok;
 private:
+    std::vector<RenderSprite*> render_sprites;
     SDL_Renderer* renderer;
-    SDL_Rect rect;
-    SDL_Texture* texture;
-    TTF_Font* font;
-    unsigned char* image;
-    int width;
-    int height;
-    int channels;
 };
 
 #endif // SPACE_WORLD_H

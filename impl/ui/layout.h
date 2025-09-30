@@ -2,13 +2,13 @@
 #define LAYOUT_H
 #include <vector>
 
-#include "impl/ui/window.h"
+#include "impl/ui/button.h"
 
 class Layout {
 public:
     Layout();
 public:
-    std::vector<Window> windows;
+    std::vector<Button> windows;
     bool horizontal_direction;
     std::size_t offset_x;
     std::size_t offset_y;
