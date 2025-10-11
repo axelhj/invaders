@@ -36,12 +36,10 @@ RenderSprite::RenderSprite(SDL_Renderer* renderer, const char* asset_path)
 }
 
 void RenderSprite::set_x(float x) {
-    std::cout << x << std::endl;
     rect.x = x;
 }
 
 void RenderSprite::set_y(float y) {
-    std::cout << y << std::endl;
     rect.y = y;
 }
 

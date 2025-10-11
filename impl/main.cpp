@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     bool should_quit = false;
     float accumulator = 0;
     while (!should_quit) {
-        SDL_SetRenderDrawColor(renderer, 20, 20, 20, 0);
+        SDL_SetRenderDrawColor(renderer, 200, 20, 20, 0);
         SDL_RenderClear(renderer);
         world.update(accumulator, FRAME_TIME_TARGET_MS);
         accumulator += FRAME_TIME_TARGET_MS;
@@ -41,7 +41,6 @@ int main(int argc, char **argv) {
         SDL_Delay((int)FRAME_TIME_TARGET_MS);
         SDL_RenderPresent(renderer);
         if (SDL_PollEvent(&event) == SDL_TRUE) {
-            std::cout << event.type << std::endl;
             if (event.type == SDL_EVENT_QUIT) {
                 should_quit = true;
             } else if (event.type == SDL_EVENT_KEY_DOWN) {
@@ -59,6 +58,8 @@ int main(int argc, char **argv) {
                 }
             } else if (event.type == SDL_EVENT_KEY_UP) {
                 inputs.set_kc(event.key.key, false);
+            } else {
+                std::cout << event.type << std::endl;
             }
         }
     }

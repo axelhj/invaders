@@ -11,10 +11,15 @@
 
 RenderRow::RenderRow(SDL_Renderer* renderer, const char* font_path)
     : init_ok(false),
+    is_prepared(false),
+    has_cursor(false),
+    cursor_pos(0),
     renderer(renderer),
     rect(),
+    target_rect(),
     texture(nullptr),
-    font(nullptr) {
+    font(nullptr),
+    text() {
     /* Initialize the TTF library */
     if (TTF_Init() < 0) {
         SDL_LogError(1, "TTF_Init() failed: %s\n", TTF_GetError());
@@ -52,7 +57,7 @@ bool RenderRow::render_text(
     return true;
 }
 
-bool RenderRow::draw(
+bool RenderRow::prepare_text(
     const char* text,
     float x,
     float y,
@@ -60,34 +65,50 @@ bool RenderRow::draw(
     bool has_cursor,
     std::size_t cursor_pos
 ) {
-    SDL_FRect tRect = {};
+    if (is_prepared) {
+        return false;
+    }
+    this->text = text;
+    this->has_cursor = has_cursor;
+    this->cursor_pos = cursor_pos;
+    target_rect = {};
     TTF_SetFontOutline(font, 0);
     int result = 0;
     if (text[0] == '\0') {
         rect.w = 8;
         rect.h = 32;
     } else {
-        // auto hashed = str_hasher(text);
-        // auto entry = lru.find(hashed);
-        // if (entry == nullptr) {
-            SDL_Color cursor_color = {200, 200, 200, 0};
-            result = render_text(cursor_color, text, w);
-        //     lru.append(hashed, texture);
-        // } else {
-            auto prop = SDL_GetTextureProperties(texture);
-            rect.w = SDL_GetNumberProperty(prop, SDL_PROP_TEXTURE_WIDTH_NUMBER, 0);
-            rect.h = SDL_GetNumberProperty(prop, SDL_PROP_TEXTURE_HEIGHT_NUMBER, 0);
-        // }
+        SDL_Color cursor_color = {50, 120, 120, 0};
+        result = render_text(cursor_color, text, w);
     }
-    if (rect.w == 0 || rect.h == 0 || result != 0) {
+    if (rect.w == 0 || rect.h == 0 || !result) {
         return false;
     }
-    tRect.x = x;
-    tRect.y = y;
-    tRect.w = rect.w;
-    tRect.h = rect.h;
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderFillRect(renderer, &tRect);
+    target_rect.x = x;
+    target_rect.y = y;
+    target_rect.w = rect.w;
+    target_rect.h = rect.h;
+    is_prepared = true;
+    return true;
+}
+
+bool RenderRow::draw() {
+    if (!is_prepared) {
+        return false;
+    }
+    TTF_SetFontOutline(font, 0);
+    auto prop = SDL_GetTextureProperties(texture);
+    rect.w = SDL_GetNumberProperty(prop, SDL_PROP_TEXTURE_WIDTH_NUMBER, 0);
+    rect.h = SDL_GetNumberProperty(prop, SDL_PROP_TEXTURE_HEIGHT_NUMBER, 0);
+    if (rect.w == 0 || rect.h == 0) {
+        return false;
+    }
+    const int x = target_rect.x;
+    const int y = target_rect.y;
+    const int w = target_rect.w;
+    const int h = target_rect.h;
+    SDL_SetRenderDrawColor(renderer, 150, 50, 50, 0);
+    SDL_RenderFillRect(renderer, &target_rect);
     if (has_cursor) {
         SDL_SetRenderDrawColor(renderer, 150, 150, 150, 0);
         int precedingWidth = 0;
@@ -99,26 +120,26 @@ bool RenderRow::draw(
         auto from_cursor = std::string(text).substr(cursor_pos, 1);
         int charResult = TTF_SizeUTF8(font, from_cursor.c_str(), &charWidth, &charHeight);
         if (precedingStringResult == 0 && charResult == 0) {
-            tRect.x = x + precedingWidth;
+            target_rect.x = x + precedingWidth;
             // No char width indicates end of row.
             if (charWidth == 0) {
-                tRect.y = precedingHeight + y - charHeight / 2.f;
-                tRect.w = 12;
-                tRect.h = charHeight / 2.f;
+                target_rect.y = precedingHeight + y - charHeight / 2.f;
+                target_rect.w = 12;
+                target_rect.h = charHeight / 2.f;
             } else {
-                tRect.y = precedingHeight + y - charHeight;
-                tRect.w = charWidth;
-                tRect.h = charHeight;
+                target_rect.y = precedingHeight + y - charHeight;
+                target_rect.w = charWidth;
+                target_rect.h = charHeight;
             }
         }
-        SDL_RenderFillRect(renderer, &tRect);
+        SDL_RenderFillRect(renderer, &target_rect);
     }
-    tRect.x = x;
-    tRect.y = y;
-    tRect.w = rect.w;
-    tRect.h = rect.h;
+    target_rect.x = x;
+    target_rect.y = y;
+    target_rect.w = w;
+    target_rect.h = h;
     if (text[0] != '\0') {
-        SDL_RenderTexture(renderer, texture, NULL, &tRect);
+        SDL_RenderTexture(renderer, texture, NULL, &target_rect);
     }
     return true;
 }
@@ -130,11 +151,9 @@ RenderRow::~RenderRow() {
     if (font != NULL) {
         TTF_CloseFont(font);
     }
-    /* De-init TTF. */
     if (texture != NULL) {
         SDL_DestroyTexture(texture);
     }
-    /* De-init TTF. */
     if (init_ok) {
         TTF_Quit();
     }

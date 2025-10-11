@@ -18,6 +18,17 @@ SpaceWorld::SpaceWorld(SDL_Renderer* renderer, Inputs* inputs)
     render_sprites.emplace_back(
         new RenderSprite(renderer, "../asset/ship.png")
     );
+    render_rows.emplace_back(
+        new RenderRow(renderer, "./FreeSans.ttf")
+    );
+    render_rows[0]->prepare_text(
+        "Space Invaders",
+        200,
+        200,
+        100,
+        false,
+        0
+    );
     init_ok = true;
 }
 
@@ -54,6 +65,9 @@ void SpaceWorld::update(
 void SpaceWorld::draw() {
     for (auto &render_sprite : render_sprites) {
         render_sprite->draw();
+    }
+    for (auto &render_row : render_rows) {
+        render_row->draw();
     }
 }
 

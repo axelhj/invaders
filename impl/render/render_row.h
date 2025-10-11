@@ -6,6 +6,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include <cstdlib>
+#include <string>
 
 class RenderRow {
 public:
@@ -16,7 +17,7 @@ public:
         const char *text,
         unsigned int width
     );
-    bool draw(
+    bool prepare_text(
         const char* text,
         float x,
         float y,
@@ -24,12 +25,18 @@ public:
         bool has_cursor,
         std::size_t cursor_pos
     );
+    bool draw();
     bool init_ok;
+    bool is_prepared;
+    bool has_cursor;
+    bool cursor_pos;
 private:
     SDL_Renderer* renderer;
     SDL_Rect rect;
+    SDL_FRect target_rect;
     SDL_Texture* texture;
     TTF_Font* font;
+    std::string text;
 };
 
 #endif // ROW_H

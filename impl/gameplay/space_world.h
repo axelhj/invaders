@@ -2,6 +2,7 @@
 #define SPACE_WORLD_H
 
 #include "impl/render/render_sprite.h"
+#include "impl/render/render_row.h"
 #include "impl/gameplay/inputs.h"
 
 #include <SDL3/SDL.h>
@@ -19,6 +20,7 @@ public:
     bool init_ok;
 private:
     std::vector<RenderSprite*> render_sprites;
+    std::vector<RenderRow*> render_rows;
     SDL_Renderer* renderer;
     Inputs* inputs;
 };
