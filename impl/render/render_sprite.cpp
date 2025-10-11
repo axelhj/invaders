@@ -89,6 +89,7 @@ void RenderSprite::draw() {
         SDL_LockTexture(texture, NULL, &pixels, &pitch);
         memcpy(pixels, image, width * height * 4);
         SDL_UnlockTexture(texture);
+        SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
     }
     SDL_FRect destinationRect { rect };
     SDL_RenderTexture(renderer, texture, NULL, &destinationRect);
