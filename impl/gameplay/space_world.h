@@ -13,7 +13,12 @@
 
 class SpaceWorld {
 public:
-    SpaceWorld(SDL_Renderer* renderer, Inputs* inputs);
+    SpaceWorld(
+        SDL_Renderer* renderer,
+        Inputs* inputs,
+        int width,
+        int height
+    );
     ~SpaceWorld();
     void update(float time, float delta_time);
     void draw();
@@ -23,6 +28,8 @@ private:
     std::vector<RenderRow*> render_rows;
     SDL_Renderer* renderer;
     Inputs* inputs;
+    int width;
+    int height;
 };
 
 #endif // SPACE_WORLD_H

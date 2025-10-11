@@ -28,19 +28,19 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
     auto inputs = Inputs();
-    auto world = SpaceWorld(renderer, &inputs);
+    auto world = SpaceWorld(renderer, &inputs, WINDOW_WIDTH, WINDOW_HEIGHT);
     bool should_quit = false;
     float accumulator = 0;
     while (!should_quit) {
         SDL_SetRenderDrawColor(renderer, 200, 20, 20, 0);
         SDL_RenderClear(renderer);
-        world.update(accumulator, FRAME_TIME_TARGET_MS);
-        accumulator += FRAME_TIME_TARGET_MS;
+        world.update(accumulator, FRAME_TIME_TARGET_MS / 1000.0f);
+        accumulator += FRAME_TIME_TARGET_MS / 1000.0f;
         world.draw();
         inputs.update();
         SDL_Delay((int)FRAME_TIME_TARGET_MS);
         SDL_RenderPresent(renderer);
-        if (SDL_PollEvent(&event) == SDL_TRUE) {
+        while (SDL_PollEvent(&event) == SDL_TRUE) {
             if (event.type == SDL_EVENT_QUIT) {
                 should_quit = true;
             } else if (event.type == SDL_EVENT_KEY_DOWN) {
