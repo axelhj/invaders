@@ -14,6 +14,7 @@ struct Inputs {
     bool a_down;
     bool c_down;
     bool s_down;
+    bool sh_down;
     bool l_tick;
     bool r_tick;
     bool u_tick;
@@ -21,6 +22,7 @@ struct Inputs {
     bool a_tick;
     bool c_tick;
     bool s_tick;
+    bool sh_tick;
 };
 
 #endif // INPUT_H

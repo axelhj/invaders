@@ -20,7 +20,8 @@ RenderRow::RenderRow(SDL_Renderer* renderer, const char* font_path)
     texture(nullptr),
     font(nullptr),
     text() {
-    /* Initialize the TTF library */
+    /* Initialize the TTF library. Initializations are counted/stacked,
+       and n - 1 'quits' are skipped for n initializations. */
     if (TTF_Init() < 0) {
         SDL_LogError(1, "TTF_Init() failed: %s\n", TTF_GetError());
         return;

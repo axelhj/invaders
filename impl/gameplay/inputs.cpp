@@ -10,18 +10,21 @@ Inputs::Inputs() :
     a_down(false),
     c_down(false),
     s_down(false),
+    sh_down(false),
     l_tick(false),
     r_tick(false),
     u_tick(false),
     d_tick(false),
     a_tick(false),
     c_tick(false),
-    s_tick(false) {
+    s_tick(false),
+    sh_tick(false) {
 }
 
 void Inputs::update() {
-    // l_tick = r_tick = u_tick =
-    // d_tick = a_tick = c_tick = s_tick = false;
+    l_tick = r_tick = u_tick =
+    d_tick = a_tick = c_tick =
+    s_tick = sh_tick = false;
 }
 
 void Inputs::set_kc(SDL_Keycode code, bool status) {
@@ -44,6 +47,10 @@ void Inputs::set_kc(SDL_Keycode code, bool status) {
     case SDLK_LCTRL:
     case SDLK_RCTRL:
         c_down = c_tick = status;
+        break;
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
+        sh_down = sh_tick = status;
         break;
     case SDLK_A:
         a_down = a_tick = status;

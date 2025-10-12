@@ -6,8 +6,8 @@
 #include <SDL3/SDL_properties.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#define BASE_SPEED 90.0f
-#define MAX_SPEED 115.0f
+#define BASE_SPEED 115.0f
+#define MAX_SPEED 195.0f
 
 SpaceWorld::SpaceWorld(
     SDL_Renderer* renderer,
@@ -53,19 +53,17 @@ void SpaceWorld::update(
     if (inputs->a_tick) {
         // Fire space-cannon.
     }
-    if (inputs->l_tick) {
-        render_sprite->x =
-            render_sprite->x - (BASE_SPEED * delta_time);
-    } else if (inputs->r_tick) {
-        render_sprite->x =
-            render_sprite->x + (BASE_SPEED * delta_time);
+    const auto tick_speed = (inputs->sh_down ? MAX_SPEED : BASE_SPEED) *
+        delta_time;
+    if (inputs->l_down) {
+        render_sprite->x = render_sprite->x - tick_speed;
+    } else if (inputs->r_down) {
+        render_sprite->x = render_sprite->x + tick_speed;
     }
-    if (inputs->u_tick) {
-        render_sprite->y =
-            render_sprite->y - (BASE_SPEED * delta_time);
-    } else if (inputs->d_tick) {
-        render_sprite->y =
-            render_sprite->y + (BASE_SPEED * delta_time);
+    if (inputs->u_down) {
+        render_sprite->y = render_sprite->y - tick_speed;
+    } else if (inputs->d_down) {
+        render_sprite->y = render_sprite->y + tick_speed;
     }
 }
 
