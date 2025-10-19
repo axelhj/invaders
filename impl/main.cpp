@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     bool should_quit = false;
     float accumulator = 0;
     while (!should_quit) {
-        SDL_SetRenderDrawColor(renderer, 200, 20, 20, 0);
+        SDL_SetRenderDrawColor(renderer, 20, 20, 20, 0);
         SDL_RenderClear(renderer);
         world.update(accumulator, FRAME_TIME_TARGET_MS / 1000.0f);
         accumulator += FRAME_TIME_TARGET_MS / 1000.0f;

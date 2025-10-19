@@ -1,13 +1,15 @@
 #include "impl/gameplay/space_world.h"
 #include "impl/gameplay/inputs.h"
+#include "impl/gameplay/command_central.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_properties.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#define BASE_SPEED 115.0f
-#define MAX_SPEED 195.0f
+#define BASE_SPEED 175.0f
+#define MAX_SPEED 220.0f
+#define ENEMY_INITIAL_SPEED 195.0f
 
 SpaceWorld::SpaceWorld(
     SDL_Renderer* renderer,
@@ -16,6 +18,13 @@ SpaceWorld::SpaceWorld(
     int height
 ) : init_ok(false),
     render_sprites(),
+    render_rows(),
+    command_central(
+        width,
+        height,
+        std::vector<RenderSprite*>(),
+        ENEMY_INITIAL_SPEED
+    ),
     renderer(renderer),
     inputs(inputs),
     width(width),
@@ -23,6 +32,9 @@ SpaceWorld::SpaceWorld(
 {
     render_sprites.emplace_back(
         new RenderSprite(renderer, "../asset/ship.png")
+    );
+    render_sprites.emplace_back(
+        new RenderSprite(renderer, "../asset/blip.png")
     );
     render_rows.emplace_back(
         new RenderRow(renderer, "./FreeSans.ttf")
@@ -42,6 +54,36 @@ SpaceWorld::SpaceWorld(
     render_sprite->height = ship_height;
     render_sprite->x = (float)(width - ship_width) / 2;
     render_sprite->y = height - ship_height;
+    render_sprite = render_sprites[1];
+    // auto blip_width = 40;
+    // auto blip_height = 40;
+    auto ship_count = 5;
+    auto padding = 60;
+    auto enemy_width = 80;
+    auto enemy_height = 80;
+    render_sprite->x = 50;
+    render_sprite->y = 200;
+    std::vector<RenderSprite*> commanded_sprites {};
+    for (int i = 0; i < ship_count; ++i) {
+        render_sprites.emplace_back((render_sprite = new RenderSprite(renderer, "../asset/alien.png")));
+        render_sprite->x = (int)(padding + ((width - padding) / ship_count) * i + enemy_width / 2);
+        render_sprite->y = (int)(height / ship_count - (enemy_height / 2));
+        render_sprite->width = enemy_width;
+        render_sprite->height = enemy_height;
+        commanded_sprites.push_back(render_sprite);
+    }
+    command_central = CommandCentral(
+        width,
+        height,
+        commanded_sprites,
+        ENEMY_INITIAL_SPEED
+    );
+    command_central.sequence = std::vector<DIRECTION> {
+        DIRECTION::R,
+        DIRECTION::D,
+        DIRECTION::L,
+        DIRECTION::D,
+    };
     init_ok = true;
 }
 
@@ -65,6 +107,7 @@ void SpaceWorld::update(
     } else if (inputs->d_down) {
         render_sprite->y = render_sprite->y + tick_speed;
     }
+    command_central.update(time, delta_time);
 }
 
 void SpaceWorld::draw() {
@@ -77,4 +120,10 @@ void SpaceWorld::draw() {
 }
 
 SpaceWorld::~SpaceWorld() {
+    for (auto &render_sprite : render_sprites) {
+        delete render_sprite;
+    }
+    for (auto &render_row : render_rows) {
+        delete render_row;
+    }
 }

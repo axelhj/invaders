@@ -4,6 +4,7 @@
 #include "impl/render/render_sprite.h"
 #include "impl/render/render_row.h"
 #include "impl/gameplay/inputs.h"
+#include "impl/gameplay/command_central.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
@@ -26,6 +27,7 @@ public:
 private:
     std::vector<RenderSprite*> render_sprites;
     std::vector<RenderRow*> render_rows;
+    CommandCentral command_central;
     SDL_Renderer* renderer;
     Inputs* inputs;
     int width;
