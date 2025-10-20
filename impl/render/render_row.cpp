@@ -22,17 +22,17 @@ RenderRow::RenderRow(SDL_Renderer* renderer, const char* font_path)
     text() {
     /* Initialize the TTF library. Initializations are counted/stacked,
        and n - 1 'quits' are skipped for n initializations. */
-    if (TTF_Init() < 0) {
-        SDL_LogError(1, "TTF_Init() failed: %s\n", TTF_GetError());
+    if (!TTF_Init()) {
+        SDL_LogError(1, "TTF_Init() failed: %s\n", SDL_GetError());
         return;
     }
     font = TTF_OpenFont(font_path, 24);
     if (font == NULL) {
-        SDL_LogError(1, "Couldn't initialize TT-font: %s\n", TTF_GetError());
+        SDL_LogError(1, "Couldn't initialize TT-font: %s\n", SDL_GetError());
         return;
     }
     if (TTF_SetFontSize(font, 24) != 0) {
-        SDL_LogError(1, "Couldn't set font-size with TTF: %s\n", TTF_GetError());
+        SDL_LogError(1, "Couldn't set font-size with TTF: %s\n", SDL_GetError());
         return;
     }
     init_ok = true;
@@ -43,9 +43,9 @@ bool RenderRow::render_text(
     const char *text,
     unsigned int width
 ) {
-    SDL_Surface* surface = TTF_RenderUTF8_Blended_Wrapped(font, text, textColor, width);
+    SDL_Surface* surface = TTF_RenderText_Blended_Wrapped(font, text, strlen(text), textColor, width);
     if (surface == nullptr) {
-        SDL_LogError(1, "TTF_RenderUTF8_Solid_Wrapped() failed: %s\n", TTF_GetError());
+        SDL_LogError(1, "TTF_RenderUTF8_Solid_Wrapped() failed: %s\n", SDL_GetError());
         return false;
     }
     // Continuous creation and destrution of surface causes a small memory leak.
@@ -115,11 +115,23 @@ bool RenderRow::draw() {
         int precedingWidth = 0;
         int precedingHeight = 0;
         auto until_cursor = std::string(text).substr(0, cursor_pos);
-        int precedingStringResult = TTF_SizeUTF8(font, until_cursor.c_str(), &precedingWidth, &precedingHeight);
+        int precedingStringResult = TTF_GetStringSize(
+            font,
+            until_cursor.c_str(),
+            until_cursor.size(),
+            &precedingWidth,
+            &precedingHeight
+        );
         int charWidth = 0;
         int charHeight = 0;
         auto from_cursor = std::string(text).substr(cursor_pos, 1);
-        int charResult = TTF_SizeUTF8(font, from_cursor.c_str(), &charWidth, &charHeight);
+        int charResult = TTF_GetStringSize(
+            font,
+            from_cursor.c_str(),
+            from_cursor.size(),
+            &charWidth,
+            &charHeight
+        );
         if (precedingStringResult == 0 && charResult == 0) {
             target_rect.x = x + precedingWidth;
             // No char width indicates end of row.

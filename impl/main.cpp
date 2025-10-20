@@ -17,12 +17,12 @@ int main(int argc, char **argv) {
     SDL_Window* window;
     SDL_Renderer* renderer;
     /* Init SDL. */
-    if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO)) {
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogError(1, "SDL_Init() failed: %s\n", SDL_GetError());
         return EXIT_FAILURE;
     }
     /* Create a window */
-    if (SDL_CreateWindowAndRenderer("invaders", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer) < 0) {
+    if (!SDL_CreateWindowAndRenderer("invaders", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer)) {
         SDL_LogError(1, "SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
         SDL_Quit();
         return EXIT_FAILURE;
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         inputs.update();
         SDL_Delay((int)FRAME_TIME_TARGET_MS);
         SDL_RenderPresent(renderer);
-        while (SDL_PollEvent(&event) == SDL_TRUE) {
+        while (SDL_PollEvent(&event)) {
             if (event.type == SDL_EVENT_QUIT) {
                 should_quit = true;
             } else if (event.type == SDL_EVENT_KEY_DOWN) {

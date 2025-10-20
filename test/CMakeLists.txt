@@ -17,13 +17,46 @@ target_sources("testproj" PRIVATE FILE_SET headers BASE_DIRS TYPE HEADERS)
 
 target_compile_options("testproj" PRIVATE "-Wall")
 target_compile_options("testproj" PRIVATE "-O0")
-target_compile_options("testproj" PRIVATE "-m64")
+# target_compile_options("testproj" PRIVATE "-m64")
 target_compile_options("testproj" PRIVATE "-g")
 target_compile_options("testproj" PRIVATE "-finput-charset=UTF-8")
+# target_link_options("invaders" PRIVATE "-m64")
+target_link_libraries(
+        "invaders"
+        "sdl"
+        "sdlttf"
+)
+# target_link_libraries("invaders" "opengl32" "-lglu32" "-lgdi32")
 
-target_link_options("testproj" PRIVATE "-m64")
-target_link_libraries("testproj" "sdl" "sdlttf")
-target_link_libraries("testproj" "opengl32" "-lglu32" "-lgdi32")
+target_link_libraries(
+        "testproj"
+        "sdl"
+        "sdlttf"
+        "-Wl,-framework,Cocoa"
+        "-Wl,-framework,IOKit"
+        "-Wl,-framework,ForceFeedback"
+        "-Wl,-framework,Carbon"
+        "-Wl,-framework,CoreVideo"
+        "-Wl,-framework,CoreAudio"
+        "-Wl,-framework,AudioToolbox"
+        "-Wl,-framework,AVFoundation"
+        "-Wl,-framework,CoreBluetooth"
+        "-Wl,-framework,CoreGraphics"
+        "-Wl,-framework,CoreMotion"
+        "-Wl,-framework,Foundation"
+        "-Wl,-weak_framework,GameController"
+        "-Wl,-weak_framework,Metal"
+        "-Wl,-weak_framework,QuartzCore"
+        "-Wl,-weak_framework,CoreHaptics"
+        "-Wl,-framework,CoreVideo"
+        "-Wl,-framework,CoreMedia"
+        "-Wl,-framework,CoreText"
+        "-Wl,-framework,CoreFoundation"
+        "-weak_framework UniformTypeIdentifiers"
+        "-L/opt/homebrew/lib"
+        "freetype"
+)
+
 # add_test(NAME case_1 COMMAND testproj 1)
 # add_test(NAME case_2 COMMAND testproj 2)
 # add_test(NAME case_3 COMMAND testproj 3)
