@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
     auto world = SpaceWorld(renderer, &inputs, WINDOW_WIDTH, WINDOW_HEIGHT);
     bool should_quit = false;
     float accumulator = 0;
+    SDL_SetRenderVSync(renderer, 1);
     while (!should_quit) {
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 0);
         SDL_RenderClear(renderer);
@@ -38,7 +39,7 @@ int main(int argc, char **argv) {
         accumulator += FRAME_TIME_TARGET_MS / 1000.0f;
         world.draw();
         inputs.update();
-        SDL_Delay((int)FRAME_TIME_TARGET_MS);
+        // SDL_Delay((int)FRAME_TIME_TARGET_MS);
         SDL_RenderPresent(renderer);
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_EVENT_QUIT) {

@@ -15,6 +15,8 @@ CommandCentral::CommandCentral(
     distance_for_direction(0),
     offensive_distance(1),
     sequence(),
+    width(width),
+    height(height),
     step_number(0),
     units(units) {
 }
@@ -28,13 +30,13 @@ void CommandCentral::update(float time, float delta_time) {
     } else if (direction == DIRECTION::R) {
         move_all(speed * delta_time, 0);
     } else if (direction == DIRECTION::D) {
-        move_all(0, speed * delta_time);
+        move_all(0, speed * delta_time * 0.3f);
     } else if (direction == DIRECTION::U) {
         move_all(0, -speed * delta_time);
     }
     if (
-        (direction == DIRECTION::L && min_x() < 20) ||
-        (direction == DIRECTION::R && max_x() > width - 20) ||
+        (direction == DIRECTION::L && min_x() < 40) ||
+        (direction == DIRECTION::R && max_x() > (width - 40)) ||
         (
             direction == DIRECTION::D &&
             distance_for_direction >= speed * offensive_distance
@@ -65,7 +67,7 @@ void CommandCentral::move_all(float x, float y) {
 float CommandCentral::max_x() {
     auto max = std::numeric_limits<float>::min();
     for (auto& unit : units) {
-        if (unit->x > max) {
+        if (unit->x + unit->width > max) {
             max = unit->x + unit->width;
         }
     }
@@ -85,7 +87,7 @@ float CommandCentral::min_x() {
 float CommandCentral::max_y() {
     auto max = std::numeric_limits<float>::min();
     for (auto& unit : units) {
-        if (unit->y > max) {
+        if (unit->y + unit->height > max) {
             max = unit->y + unit->height;
         }
     }

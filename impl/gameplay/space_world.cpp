@@ -8,8 +8,8 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #define BASE_SPEED 175.0f
-#define MAX_SPEED 220.0f
-#define ENEMY_INITIAL_SPEED 195.0f
+#define MAX_SPEED 320.0f
+#define ENEMY_INITIAL_SPEED 135.0f
 
 SpaceWorld::SpaceWorld(
     SDL_Renderer* renderer,
@@ -41,9 +41,9 @@ SpaceWorld::SpaceWorld(
     );
     render_rows[0]->prepare_text(
         "Space Invaders",
-        200,
-        200,
-        100,
+        70,
+        70,
+        130,
         false,
         0
     );
