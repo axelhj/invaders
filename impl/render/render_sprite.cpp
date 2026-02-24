@@ -64,8 +64,9 @@ void RenderSprite::draw() {
         SDL_UnlockTexture(texture);
         SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
     }
-    SDL_FRect destinationRect { x, y, width, height };
-    SDL_RenderTexture(renderer, texture, NULL, &destinationRect);
+    SDL_FRect destination_rect { x, y, width, height };
+    SDL_FRect src_rect { 0, 0, 12, 12 };
+    SDL_RenderTexture(renderer, texture, &src_rect, &destination_rect);
 }
 
 RenderSprite::~RenderSprite() {
