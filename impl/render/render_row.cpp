@@ -31,7 +31,7 @@ RenderRow::RenderRow(SDL_Renderer* renderer, const char* font_path)
         SDL_LogError(1, "Couldn't initialize TT-font: %s\n", SDL_GetError());
         return;
     }
-    if (!TTF_SetFontSize(font, 24)) {
+    if (TTF_SetFontSize(font, 24) != 0) {
         SDL_LogError(1, "Couldn't set font-size with TTF: %s\n", SDL_GetError());
         return;
     }
