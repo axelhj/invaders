@@ -57,10 +57,18 @@ void CommandCentral::advance() {
 }
 
 void CommandCentral::move_all(float x, float y) {
+    auto oob_u = max_y() >= height;
+    auto oob_d = max_y() <= 0;
+    auto oob_l = max_x() <= 0;
+    auto oob_r = max_x() >= (width - 40);
     for (auto& unit : units) {
         distance_for_direction += std::max(x, y);
-        unit->x += x;
-        unit->y += y;
+        if ((x > 0 && !oob_r) || (x < 0 && !oob_l)) {
+            unit->x += x;
+        }
+        if ((y > 0 && !oob_u) || (y < 0 && !oob_d)) {
+            unit->y += y;
+        }
     }
 }
 
