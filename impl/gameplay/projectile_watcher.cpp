@@ -10,9 +10,9 @@ typedef enum Direction {
     L, R, U, D
 } DIRECTION;
 
-class CommandCentral {
+class ProjectileWatcher {
 public:
-    CommandCentral(
+    ProjectileWatcher(
         float width,
         float height,
         std::vector<RenderSprite*> units,
