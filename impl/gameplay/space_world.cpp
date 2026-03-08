@@ -1,6 +1,5 @@
 #include "impl/gameplay/space_world.h"
-#include "impl/gameplay/inputs.h"
-#include "impl/gameplay/command_central.h"
+#include "impl/control/inputs.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
@@ -81,6 +80,7 @@ SpaceWorld::SpaceWorld(
     command_central.sequence = std::vector<DIRECTION> {
         DIRECTION::R,
         DIRECTION::D,
+        DIRECTION::U,
         DIRECTION::L,
         DIRECTION::D,
     };

@@ -19,8 +19,6 @@ public:
         float speed
     );
     void update(float time, float delta_time);
-    void advance();
-    void move_all(float x, float y);
     float max_x();
     float min_x();
     float max_y();
@@ -35,6 +33,7 @@ private:
     float height;
     std::size_t step_number;
     std::vector<RenderSprite*> units;
+    void move_all(float x, float y);
 };
 
 #endif // COMMAND_CENTRAL_H

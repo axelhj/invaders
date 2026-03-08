@@ -3,7 +3,7 @@
 
 #include "impl/render/render_sprite.h"
 #include "impl/render/render_row.h"
-#include "impl/gameplay/inputs.h"
+#include "impl/control/inputs.h"
 #include "impl/gameplay/command_central.h"
 
 #include <SDL3/SDL.h>

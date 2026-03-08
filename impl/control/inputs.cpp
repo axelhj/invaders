@@ -1,4 +1,4 @@
-#include "impl/gameplay/inputs.h"
+#include "impl/control/inputs.h"
 
 #include <SDL3/SDL_keycode.h>
 

@@ -1,5 +1,5 @@
 #include "impl/gameplay/space_world.h"
-#include "impl/gameplay/inputs.h"
+#include "impl/control/inputs.h"
 #include "impl/constant/constants.h"
 
 #include <SDL3/SDL.h>
